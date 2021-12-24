@@ -13,7 +13,7 @@
    ```
    *다운로드한 경우는 파일을 압축해제 합니다.*  
 
-2. termianl 에서 git clone 한 폴더로 이동합니다. (혹은 압축 해제한 폴더로 이동합니다)
+2. Terminal에서 git clone한 폴더로 이동합니다. (혹은 압축 해제한 폴더로 이동합니다)
 ``` bash
     cd xpopdockerfile
     or
