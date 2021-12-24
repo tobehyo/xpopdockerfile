@@ -1,5 +1,6 @@
 FROM centos:centos8
 
+# 변수를 정의하여 이미지 생성 시 변수로 이용
 ARG XPOP_DIR_NAME=xpop
 ARG DOWNLOAD_DIR_NAME=downloadfile
 ARG LIBICONV_FILE_NAME=libiconv-1.16
@@ -7,8 +8,10 @@ ARG XPOP_BIN_FILE_NAME=x-pop-svr-1.4.2.lc.jp.tar.gz
 
 WORKDIR /${XPOP_DIR_NAME}
 
+# xpop 폴더에서 xpop tar 파일을 이미지에 복사
 COPY ["./xpop/${XPOP_BIN_FILE_NAME}", "/${DOWNLOAD_DIR_NAME}/"]
 
+# Docker 실행 시 연결할 Port 번호 설정
 EXPOSE 9001
 
 RUN echo "START XPOP SET UP" \
@@ -47,7 +50,7 @@ RUN echo "START XPOP SET UP" \
     && myTemplibssl=$(ls /usr/local/openssl32/lib/ | grep libssl.so.) && myTemplibcrypto=$(ls /usr/local/openssl32/lib/ | grep libcrypto.so.) \
     && cd /${XPOP_DIR_NAME}/lib && ln -s /usr/local/openssl32/lib/${myTemplibcrypto} libcrypto.so.6 && ln -s /usr/local/openssl32/lib/${myTemplibssl} libssl.so.6
 
-# XPOP 실행을 위한 환경 변수 설정
+# XPOP 실행을 위한 환경 변수 설정 - Runtime(Docker) 실행 시 사용
 ENV XPOP_HOME="/${XPOP_DIR_NAME}"
 ENV PATH="${PATH}:${XPOP_HOME}/bin"
 ENV LD_LIBRARY_PATH="/usr/lib:/usr/local/lib:/usr/local/openssl32/lib:${XPOP_HOME}/lib:${LD_LIBRARY_PATH}"
