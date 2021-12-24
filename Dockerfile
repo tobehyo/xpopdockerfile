@@ -8,7 +8,6 @@ ARG XPOP_BIN_FILE_NAME=x-pop-svr-1.4.2.lc.jp.tar.gz
 WORKDIR /${XPOP_DIR_NAME}
 
 COPY ["./xpop/${XPOP_BIN_FILE_NAME}", "/${DOWNLOAD_DIR_NAME}/"]
-# COPY ["./files/X-POP_Server_License.xml", "/${XPOP_DIR_NAME}/"]
 
 EXPOSE 9001
 
