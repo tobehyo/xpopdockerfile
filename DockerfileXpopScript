@@ -1,0 +1,47 @@
+#FROM iamhyosang/xpop-centos8-test:1.4.2
+#FROM xpopimage:1.5.0
+FROM myxpoptestimage-centos-latest:latest
+
+WORKDIR /xpop
+
+ARG opensslversionMain=1.0.2
+ARG opensslversionSub=1.0.2u
+
+RUN echo "INSTALL NANO GIT OH-MY-BASH" \       
+    # Dependency 설치 
+    && yum -y install nano git \
+    && bash -c "$(curl -fsSL https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh)"
+
+RUN echo "INSTALL OPENSSL" \         
+    && mkdir /downloadfile && cd /downloadfile \
+    && curl -O https://www.openssl.org/source/old/${opensslversionMain}/openssl-${opensslversionSub}.tar.gz \
+    && tar xvfz openssl-${opensslversionSub}.tar.gz && cd openssl-${opensslversionSub} \
+    && ./Configure --prefix=/usr/local/openssl32-${opensslversionSub} linux-generic32 shared -m32 \
+    && make clean; make && make install
+
+RUN echo "DELETE DOWNLOAD FOLDER" \
+    && rm -rf /downloadfile
+
+RUN echo "Link openssl file" \
+    && myTemplibssl=$(ls /usr/local/openssl32-${opensslversionSub}/lib/ | grep libssl.so.) && myTemplibcrypto=$(ls /usr/local/openssl32-${opensslversionSub}/lib/ | grep libcrypto.so.) \
+    && cd /${XPOP_HOME}/lib && rm libcrypto.so.6 libssl.so.6 \
+    && ln -s /usr/local/openssl32-${opensslversionSub}/lib/${myTemplibcrypto} libcrypto.so.6 && ln -s /usr/local/openssl32-${opensslversionSub}/lib/${myTemplibssl} libssl.so.6
+
+# xpop sample script 파일 복사
+COPY ["./files/xpop_sample", "/xpop/scripts/samples/"]
+
+# 라이선스 복사
+COPY ["./files/X-POP_Server_License.xml", "/xpop/"]
+
+COPY ["./files/xpoprun.sh", "/xpop/"]
+
+# SET Locale
+ENV LC_ALL=C.UTF-8
+
+# Docker 실행 시 연결할 Port 번호 설정
+EXPOSE 9001
+
+STOPSIGNAL SIGQUIT
+
+CMD ["./xpoprun.sh"]
+
